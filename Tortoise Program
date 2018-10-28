@@ -1,0 +1,94 @@
+def runSimpleTortoiseProgram(program, winWidth=500, winHeight=500):
+    root = Tk()
+    root.resizable(width=False, height=False)  # prevents resizing window
+    canvas = Canvas(root, width=winWidth, height=winHeight)
+    canvas.configure(bd=0, highlightthickness=0)
+    canvas.pack()
+    gray = rgbString(209, 208, 206)  # define color gray
+    color = "none"  # start with no color
+    degree = 0  # start with 0 degree
+    x, y = winWidth/2, winHeight/2  # start at center
+    for line in program.splitlines():
+        # skip line when line does not content commands
+        if line.startswith("#") or line in string.whitespace:
+            continue
+        flag1, flag2 = True, True
+        # assign the first word to command, second word to value, and ignore the rest
+        for word in line.split(" "):
+            if flag1:
+                command = word
+                flag1 = False
+            elif flag2:
+                value = word
+                flag2 = False
+            else: break
+        if command == "color":  # change color
+            color = value
+        elif command == "move":
+            if color != "none":  # draw a line only when color is not "none"
+                canvas.create_line(x, y, x + int(value) * math.cos(degree),
+                                   y - int(value) * math.sin(degree), fill=color, width=4)
+            # set the current point to the end of the new line (new position when no color)
+            x, y = x + (int(value) * math.cos(degree)), \
+                   y - (int(value) * math.sin(degree))
+        elif command == "left":  # change angle counterclockwise
+            degree = (degree + ((int(value) * 2 * math.pi) / 360))
+        elif command == "right":  # change angle clockwise
+            degree = (degree - ((int(value) * 2 * math.pi) / 360))
+    canvas.create_text(10, 10, text=program, anchor=NW,
+                       fill=gray, font="Times 10")  # print text
+    root.mainloop()
+    
+def testRunSimpleTortoiseProgram():
+    runSimpleTortoiseProgram("""
+# Y
+color red
+right 45
+move 50
+right 45
+move 50
+right 180
+move 50
+right 45
+move 50
+color none # space
+right 45
+move 25
+
+# E
+color green
+right 90
+move 85
+left 90
+move 50
+right 180
+move 50
+right 90
+move 42
+right 90
+move 50
+right 180
+move 50
+right 90
+move 43
+right 90
+move 50  # space
+color none
+move 25
+
+# S
+color blue
+move 50
+left 180
+move 50
+left 90
+move 43
+left 90
+move 50
+right 90
+move 42
+right 90
+move 50
+""")
+
+testRunSimpleTortoiseProgram()
