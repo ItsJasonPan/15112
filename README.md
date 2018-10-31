@@ -1,1 +1,1 @@
-This is a reprository to hold some of the games I created
+This is a reprository to hold some of the programs/games I created
